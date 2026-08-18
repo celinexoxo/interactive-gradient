@@ -10,58 +10,510 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   >
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: #0a0e27;
+      font-family: "Syne", sans-serif;
+      cursor: none;
+    }
+
+    /* ========================================
+       WEBGL
+    ======================================== */
+
+    #webGLApp {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+    }
+
+    /* ========================================
+       MAIN TITLE
+    ======================================== */
+
+    .heading {
+      position: fixed;
+      z-index: 10;
+
+      top: 50%;
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+      width: 100%;
+
+      color: white;
+      text-align: center;
+
+      font-size: clamp(3.5rem, 9vw, 9rem);
+      font-weight: 700;
+
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ========================================
+       COLOR ADJUSTER BUTTON
+    ======================================== */
+
+    .toggle-adjuster-btn {
+      position: fixed;
+
+      top: 2rem;
+      left: 2rem;
+
+      z-index: 100;
+
+      padding: 0.8rem 1.4rem;
+
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+
+      color: white;
+
+      font-family: "Syne", sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+
+      cursor: none;
+
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+
+      transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .toggle-adjuster-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: translateY(-2px);
+    }
+
+    /* ========================================
+       COLOR PANEL
+    ======================================== */
+
+    .color-adjuster-panel {
+      position: fixed;
+
+      top: 2rem;
+      left: 2rem;
+
+      z-index: 200;
+
+      width: min(360px, calc(100vw - 2rem));
+
+      padding: 1.5rem;
+
+      background: rgba(15, 18, 45, 0.65);
+
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
+
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+
+      display: none;
+    }
+
+    .color-adjuster-panel.open {
+      display: block;
+    }
+
+    .color-adjuster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      margin-bottom: 1.4rem;
+      padding-bottom: 1rem;
+
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .color-adjuster-title {
+      color: white;
+
+      font-size: 0.95rem;
+      font-weight: 600;
+
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .color-adjuster-close {
+      width: 28px;
+      height: 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: transparent;
+      border: none;
+
+      color: white;
+      font-size: 1.5rem;
+
+      cursor: none;
+
+      opacity: 0.8;
+
+      transition: opacity 0.2s ease;
+    }
+
+    .color-adjuster-close:hover {
+      opacity: 0.5;
+    }
+
+    /* ========================================
+       COLOR PICKERS
+    ======================================== */
+
+    .color-picker-group {
+      margin-bottom: 1rem;
+    }
+
+    .color-picker-label {
+      margin-bottom: 0.45rem;
+
+      color: white;
+
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      opacity: 0.85;
+    }
+
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .color-picker-input {
+      width: 48px;
+      height: 36px;
+
+      padding: 0;
+
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 7px;
+
+      background: transparent;
+
+      cursor: none;
+      overflow: hidden;
+    }
+
+    .color-picker-input::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-picker-input::-webkit-color-swatch {
+      border: none;
+      border-radius: 5px;
+    }
+
+    .color-value-display {
+      flex: 1;
+
+      height: 36px;
+
+      padding: 0 0.7rem;
+
+      background: rgba(0, 0, 0, 0.2);
+
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 7px;
+
+      color: white;
+
+      font-family: monospace;
+      font-size: 0.75rem;
+
+      outline: none;
+    }
+
+    .copy-btn {
+      height: 36px;
+
+      padding: 0 0.8rem;
+
+      background: rgba(255, 255, 255, 0.08);
+
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 7px;
+
+      color: white;
+
+      font-family: "Syne", sans-serif;
+      font-size: 0.7rem;
+
+      cursor: none;
+
+      transition: 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .copy-btn.copied {
+      background: rgba(60, 190, 110, 0.25);
+      border-color: rgba(60, 190, 110, 0.5);
+    }
+
+    /* ========================================
+       EXPORT
+    ======================================== */
+
+    .color-adjuster-actions {
+      margin-top: 1.3rem;
+      padding-top: 1rem;
+
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .export-btn {
+      width: 100%;
+
+      padding: 0.8rem;
+
+      background: rgba(255, 255, 255, 0.1);
+
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+
+      color: white;
+
+      font-family: "Syne", sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+
+      cursor: none;
+
+      transition: 0.25s ease;
+    }
+
+    .export-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* ========================================
+       FOOTER
+    ======================================== */
+
+    .footer {
+      position: fixed;
+
+      left: 50%;
+      bottom: 2rem;
+
+      transform: translateX(-50%);
+
+      z-index: 10;
+
+      color: white;
+
+      font-size: clamp(0.75rem, 1.2vw, 1rem);
+      font-weight: 600;
+
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+
+      opacity: 0.9;
+
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ========================================
+       CUSTOM CURSOR
+    ======================================== */
+
+    .custom-cursor {
+      position: fixed;
+
+      width: 40px;
+      height: 40px;
+
+      left: 0;
+      top: 0;
+
+      border: 2px solid white;
+      border-radius: 50%;
+
+      pointer-events: none;
+
+      z-index: 1000;
+
+      transform: translate(-50%, -50%);
+
+      will-change: transform;
+
+      transition:
+        width 0.2s ease,
+        height 0.2s ease,
+        border-width 0.2s ease;
+    }
+
+    .custom-cursor::before {
+      content: "";
+
+      position: absolute;
+
+      width: 7px;
+      height: 7px;
+
+      top: 50%;
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+      background: white;
+      border-radius: 50%;
+    }
+
+    /* ========================================
+       MOBILE
+    ======================================== */
+
+    @media (max-width: 700px) {
+
+      body {
+        cursor: auto;
+      }
+
+      .custom-cursor {
+        display: none;
+      }
+
+      .toggle-adjuster-btn {
+        top: 1rem;
+        left: 1rem;
+      }
+
+      .color-adjuster-panel {
+        top: 1rem;
+        left: 1rem;
+
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+      }
+
+      .footer {
+        bottom: 1.5rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- Main title -->
-  <h1 class="heading">Liquid Gradient</h1>
+  <!-- ======================================
+       BACKGROUND
+  ======================================= -->
 
-  <!-- Color Adjuster Toggle -->
+  <canvas id="webGLApp"></canvas>
+
+
+  <!-- ======================================
+       TITLE
+  ======================================= -->
+
+  <h1 class="heading">
+    Coming Soon
+  </h1>
+
+
+  <!-- ======================================
+       COLOR ADJUSTER BUTTON
+  ======================================= -->
+
   <button
     class="toggle-adjuster-btn"
     id="toggleAdjusterBtn"
-    type="button"
   >
     Adjust Colors
   </button>
 
-  <!-- Color Adjuster -->
+
+  <!-- ======================================
+       COLOR PANEL
+  ======================================= -->
+
   <div
     class="color-adjuster-panel"
     id="colorAdjusterPanel"
   >
 
     <div class="color-adjuster-header">
-      <h2 class="color-adjuster-title">
+
+      <h3 class="color-adjuster-title">
         Color Adjuster
-      </h2>
+      </h3>
 
       <button
         class="color-adjuster-close"
         id="closeAdjusterBtn"
-        type="button"
-        aria-label="Close"
       >
         ×
       </button>
+
     </div>
 
-    <!-- Color 1 -->
+
+    <!-- COLOR 1 -->
     <div class="color-picker-group">
+
       <div class="color-picker-label">
-        <span>Color 1</span>
+        Color 1
       </div>
 
       <div class="color-picker-wrapper">
+
         <input
           type="color"
           class="color-picker-input"
           id="colorPicker1"
-          value="#F15A22"
+          value="#f15a22"
         >
 
         <input
@@ -75,25 +527,29 @@
         <button
           class="copy-btn"
           data-copy="1"
-          type="button"
         >
           Copy
         </button>
+
       </div>
+
     </div>
 
-    <!-- Color 2 -->
+
+    <!-- COLOR 2 -->
     <div class="color-picker-group">
+
       <div class="color-picker-label">
-        <span>Color 2</span>
+        Color 2
       </div>
 
       <div class="color-picker-wrapper">
+
         <input
           type="color"
           class="color-picker-input"
           id="colorPicker2"
-          value="#0A0E27"
+          value="#0a0e27"
         >
 
         <input
@@ -107,25 +563,29 @@
         <button
           class="copy-btn"
           data-copy="2"
-          type="button"
         >
           Copy
         </button>
+
       </div>
+
     </div>
 
-    <!-- Color 3 -->
+
+    <!-- COLOR 3 -->
     <div class="color-picker-group">
+
       <div class="color-picker-label">
-        <span>Color 3</span>
+        Color 3
       </div>
 
       <div class="color-picker-wrapper">
+
         <input
           type="color"
           class="color-picker-input"
           id="colorPicker3"
-          value="#40E0D0"
+          value="#40e0d0"
         >
 
         <input
@@ -139,25 +599,29 @@
         <button
           class="copy-btn"
           data-copy="3"
-          type="button"
         >
           Copy
         </button>
+
       </div>
+
     </div>
 
-    <!-- Color 4 -->
+
+    <!-- COLOR 4 -->
     <div class="color-picker-group">
+
       <div class="color-picker-label">
-        <span>Color 4</span>
+        Color 4
       </div>
 
       <div class="color-picker-wrapper">
+
         <input
           type="color"
           class="color-picker-input"
           id="colorPicker4"
-          value="#F15A22"
+          value="#f15a22"
         >
 
         <input
@@ -171,105 +635,1216 @@
         <button
           class="copy-btn"
           data-copy="4"
-          type="button"
         >
           Copy
         </button>
+
       </div>
+
     </div>
 
-    <!-- Color 5 -->
+
+    <!-- COLOR 5 -->
     <div class="color-picker-group">
+
       <div class="color-picker-label">
-        <span>Color 5</span>
+        Color 5
       </div>
 
       <div class="color-picker-wrapper">
+
         <input
           type="color"
           class="color-picker-input"
           id="colorPicker5"
-          value="#0A0E27"
+          value="#004238"
         >
 
         <input
           type="text"
           class="color-value-display"
           id="colorValue5"
-          value="#0A0E27"
+          value="#004238"
           readonly
         >
 
         <button
           class="copy-btn"
           data-copy="5"
-          type="button"
         >
           Copy
         </button>
+
       </div>
+
     </div>
 
-    <!-- Color 6 -->
+
+    <!-- COLOR 6 -->
     <div class="color-picker-group">
+
       <div class="color-picker-label">
-        <span>Color 6</span>
+        Color 6
       </div>
 
       <div class="color-picker-wrapper">
+
         <input
           type="color"
           class="color-picker-input"
           id="colorPicker6"
-          value="#40E0D0"
+          value="#000000"
         >
 
         <input
           type="text"
           class="color-value-display"
           id="colorValue6"
-          value="#40E0D0"
+          value="#000000"
           readonly
         >
 
         <button
           class="copy-btn"
           data-copy="6"
-          type="button"
         >
           Copy
         </button>
+
       </div>
+
     </div>
 
+
     <div class="color-adjuster-actions">
+
       <button
         class="export-btn"
         id="exportAllBtn"
-        type="button"
       >
         Export All Colors
       </button>
+
     </div>
 
   </div>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <span>Coming Soon</span>
-  </footer>
 
-  <!-- Custom cursor -->
+  <!-- ======================================
+       FOOTER
+  ======================================= -->
+
+  <div class="footer">
+    Coming Soon
+  </div>
+
+
+  <!-- ======================================
+       CURSOR
+  ======================================= -->
+
   <div
     class="custom-cursor"
     id="customCursor"
   ></div>
 
-  <!-- Three.js -->
+
+  <!-- THREE.JS -->
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-  <!-- App -->
-  <script src="script.js"></script>
+
+  <script>
+
+    /* =====================================================
+       CONFIG
+    ===================================================== */
+
+    const CONFIG = {
+
+      colors: [
+        "#f15a22",
+        "#0a0e27",
+        "#40e0d0",
+        "#f15a22",
+        "#004238",
+        "#000000"
+      ],
+
+      speed: 0.35,
+
+      interactionStrength: 0.22
+
+    };
+
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    function hexToRgb(hex) {
+
+      hex = hex.replace("#", "");
+
+      return {
+
+        r: parseInt(hex.substring(0, 2), 16) / 255,
+
+        g: parseInt(hex.substring(2, 4), 16) / 255,
+
+        b: parseInt(hex.substring(4, 6), 16) / 255
+
+      };
+
+    }
+
+
+    function hexToVec3(hex) {
+
+      const c = hexToRgb(hex);
+
+      return new THREE.Vector3(
+        c.r,
+        c.g,
+        c.b
+      );
+
+    }
+
+
+    function rgbToHex(color) {
+
+      const r = Math.round(color.x * 255)
+        .toString(16)
+        .padStart(2, "0");
+
+      const g = Math.round(color.y * 255)
+        .toString(16)
+        .padStart(2, "0");
+
+      const b = Math.round(color.z * 255)
+        .toString(16)
+        .padStart(2, "0");
+
+      return "#" + r + g + b;
+
+    }
+
+
+    /* =====================================================
+       THREE.JS
+    ===================================================== */
+
+    const canvas =
+      document.getElementById("webGLApp");
+
+
+    const renderer =
+      new THREE.WebGLRenderer({
+
+        canvas: canvas,
+
+        antialias: true,
+
+        powerPreference: "high-performance"
+
+      });
+
+
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, 1.75)
+    );
+
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+
+    const scene =
+      new THREE.Scene();
+
+
+    const camera =
+      new THREE.OrthographicCamera(
+        -1,
+        1,
+        1,
+        -1,
+        0,
+        1
+      );
+
+
+    /* =====================================================
+       UNIFORMS
+    ===================================================== */
+
+    const uniforms = {
+
+      uTime: {
+        value: 0
+      },
+
+      uMouse: {
+        value: new THREE.Vector2(0.5, 0.5)
+      },
+
+      uMouseVelocity: {
+        value: new THREE.Vector2(0, 0)
+      },
+
+      uColor1: {
+        value: hexToVec3(CONFIG.colors[0])
+      },
+
+      uColor2: {
+        value: hexToVec3(CONFIG.colors[1])
+      },
+
+      uColor3: {
+        value: hexToVec3(CONFIG.colors[2])
+      },
+
+      uColor4: {
+        value: hexToVec3(CONFIG.colors[3])
+      },
+
+      uColor5: {
+        value: hexToVec3(CONFIG.colors[4])
+      },
+
+      uColor6: {
+        value: hexToVec3(CONFIG.colors[5])
+      },
+
+      uResolution: {
+        value: new THREE.Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+
+    };
+
+
+    /* =====================================================
+       SHADER
+    ===================================================== */
+
+    const vertexShader = `
+
+      varying vec2 vUv;
+
+      void main() {
+
+        vUv = uv;
+
+        gl_Position =
+          vec4(position, 1.0);
+
+      }
+
+    `;
+
+
+    const fragmentShader = `
+
+      precision highp float;
+
+      uniform float uTime;
+
+      uniform vec2 uMouse;
+
+      uniform vec2 uMouseVelocity;
+
+      uniform vec2 uResolution;
+
+      uniform vec3 uColor1;
+      uniform vec3 uColor2;
+      uniform vec3 uColor3;
+      uniform vec3 uColor4;
+      uniform vec3 uColor5;
+      uniform vec3 uColor6;
+
+      varying vec2 vUv;
+
+
+      float noise(vec2 p) {
+
+        return fract(
+          sin(
+            dot(
+              p,
+              vec2(127.1, 311.7)
+            )
+          )
+          * 43758.5453123
+        );
+
+      }
+
+
+      float smoothNoise(vec2 p) {
+
+        vec2 i = floor(p);
+
+        vec2 f = fract(p);
+
+        f = f * f * (3.0 - 2.0 * f);
+
+        float a = noise(i);
+
+        float b = noise(i + vec2(1.0, 0.0));
+
+        float c = noise(i + vec2(0.0, 1.0));
+
+        float d = noise(i + vec2(1.0, 1.0));
+
+        return mix(
+          mix(a, b, f.x),
+          mix(c, d, f.x),
+          f.y
+        );
+
+      }
+
+
+      float fbm(vec2 p) {
+
+        float value = 0.0;
+
+        float amplitude = 0.5;
+
+        for(int i = 0; i < 4; i++) {
+
+          value +=
+            smoothNoise(p)
+            * amplitude;
+
+          p *= 2.0;
+
+          amplitude *= 0.5;
+
+        }
+
+        return value;
+
+      }
+
+
+      void main() {
+
+        vec2 uv = vUv;
+
+        float aspect =
+          uResolution.x /
+          uResolution.y;
+
+        vec2 p = uv;
+
+        p.x *= aspect;
+
+
+        /* -------------------------
+           LIQUID MOVEMENT
+        ------------------------- */
+
+        float time =
+          uTime * ${CONFIG.speed.toFixed(2)};
+
+
+        vec2 flow = vec2(
+
+          fbm(
+            p * 1.7 +
+            vec2(time * 0.12, -time * 0.08)
+          ),
+
+          fbm(
+            p * 1.7 +
+            vec2(-time * 0.09, time * 0.13)
+          )
+
+        );
+
+
+        p +=
+          (flow - 0.5)
+          * 0.55;
+
+
+        /* -------------------------
+           MOUSE DISTORTION
+        ------------------------- */
+
+        vec2 mouse = uMouse;
+
+        mouse.x *= aspect;
+
+        vec2 diff =
+          p - mouse;
+
+        float distanceToMouse =
+          length(diff);
+
+        float influence =
+          exp(
+            -distanceToMouse
+            * 5.0
+          );
+
+
+        p +=
+          normalize(
+            diff + 0.0001
+          )
+          * influence
+          * 0.18;
+
+
+        p +=
+          uMouseVelocity
+          * influence
+          * ${CONFIG.interactionStrength.toFixed(2)};
+
+
+        /* -------------------------
+           GRADIENT CENTERS
+        ------------------------- */
+
+        vec2 c1 =
+          vec2(
+            0.35 +
+            sin(time * 0.7) * 0.32,
+
+            0.55 +
+            cos(time * 0.5) * 0.35
+          );
+
+        vec2 c2 =
+          vec2(
+            0.65 +
+            cos(time * 0.45) * 0.35,
+
+            0.35 +
+            sin(time * 0.6) * 0.35
+          );
+
+        vec2 c3 =
+          vec2(
+            0.5 +
+            sin(time * 0.32) * 0.45,
+
+            0.5 +
+            cos(time * 0.4) * 0.45
+          );
+
+
+        /* -------------------------
+           COLOR INFLUENCES
+        ------------------------- */
+
+        float d1 =
+          1.0 -
+          smoothstep(
+            0.0,
+            0.75,
+            length(
+              uv - c1
+            )
+          );
+
+
+        float d2 =
+          1.0 -
+          smoothstep(
+            0.0,
+            0.8,
+            length(
+              uv - c2
+            )
+          );
+
+
+        float d3 =
+          1.0 -
+          smoothstep(
+            0.0,
+            0.7,
+            length(
+              uv - c3
+            )
+          );
+
+
+        /* -------------------------
+           BASE COLOR
+        ------------------------- */
+
+        vec3 color =
+          uColor2 * 0.75;
+
+
+        color +=
+          uColor1
+          * d1
+          * 1.25;
+
+
+        color +=
+          uColor3
+          * d2
+          * 0.95;
+
+
+        color +=
+          uColor4
+          * d3
+          * 0.65;
+
+
+        color +=
+          uColor5
+          * d2
+          * 0.45;
+
+
+        color +=
+          uColor6
+          * (1.0 - d1)
+          * 0.2;
+
+
+        /* -------------------------
+           LIQUID WAVES
+        ------------------------- */
+
+        float wave =
+          sin(
+            p.x * 5.0
+            +
+            p.y * 4.0
+            -
+            time * 1.2
+          );
+
+
+        wave =
+          wave * 0.5
+          + 0.5;
+
+
+        color +=
+          uColor3
+          * wave
+          * 0.08;
+
+
+        /* -------------------------
+           GRAIN
+        ------------------------- */
+
+        float grain =
+          noise(
+            uv
+            * uResolution
+            * 0.35
+            +
+            uTime
+          );
+
+
+        color +=
+          (grain - 0.5)
+          * 0.035;
+
+
+        /* -------------------------
+           COLOR / CONTRAST
+        ------------------------- */
+
+        color =
+          clamp(
+            color,
+            0.0,
+            1.0
+          );
+
+
+        float luminance =
+          dot(
+            color,
+            vec3(
+              0.299,
+              0.587,
+              0.114
+            )
+          );
+
+
+        color =
+          mix(
+            vec3(luminance),
+            color,
+            1.18
+          );
+
+
+        color =
+          pow(
+            color,
+            vec3(0.92)
+          );
+
+
+        gl_FragColor =
+          vec4(
+            color,
+            1.0
+          );
+
+      }
+
+    `;
+
+
+    /* =====================================================
+       MESH
+    ===================================================== */
+
+    const material =
+      new THREE.ShaderMaterial({
+
+        uniforms,
+
+        vertexShader,
+
+        fragmentShader
+
+      });
+
+
+    const geometry =
+      new THREE.PlaneGeometry(
+        2,
+        2
+      );
+
+
+    const mesh =
+      new THREE.Mesh(
+        geometry,
+        material
+      );
+
+
+    scene.add(mesh);
+
+
+    /* =====================================================
+       MOUSE
+    ===================================================== */
+
+    const mouse =
+      new THREE.Vector2(
+        0.5,
+        0.5
+      );
+
+
+    const targetMouse =
+      new THREE.Vector2(
+        0.5,
+        0.5
+      );
+
+
+    const mouseVelocity =
+      new THREE.Vector2(
+        0,
+        0
+      );
+
+
+    let previousX =
+      0.5;
+
+    let previousY =
+      0.5;
+
+
+    window.addEventListener(
+      "mousemove",
+      (event) => {
+
+        targetMouse.x =
+          event.clientX /
+          window.innerWidth;
+
+        targetMouse.y =
+          1 -
+          event.clientY /
+          window.innerHeight;
+
+
+        mouseVelocity.x =
+          targetMouse.x -
+          previousX;
+
+        mouseVelocity.y =
+          targetMouse.y -
+          previousY;
+
+
+        previousX =
+          targetMouse.x;
+
+        previousY =
+          targetMouse.y;
+
+      }
+    );
+
+
+    window.addEventListener(
+      "touchmove",
+      (event) => {
+
+        const touch =
+          event.touches[0];
+
+        targetMouse.x =
+          touch.clientX /
+          window.innerWidth;
+
+        targetMouse.y =
+          1 -
+          touch.clientY /
+          window.innerHeight;
+
+      },
+      {
+        passive: true
+      }
+    );
+
+
+    /* =====================================================
+       ANIMATION
+    ===================================================== */
+
+    const clock =
+      new THREE.Clock();
+
+
+    function animate() {
+
+      requestAnimationFrame(
+        animate
+      );
+
+
+      const delta =
+        Math.min(
+          clock.getDelta(),
+          0.05
+        );
+
+
+      uniforms.uTime.value +=
+        delta;
+
+
+      mouse.lerp(
+        targetMouse,
+        0.08
+      );
+
+
+      mouseVelocity.lerp(
+        new THREE.Vector2(0, 0),
+        0.05
+      );
+
+
+      uniforms.uMouse.value.copy(
+        mouse
+      );
+
+
+      uniforms.uMouseVelocity.value.copy(
+        mouseVelocity
+      );
+
+
+      renderer.render(
+        scene,
+        camera
+      );
+
+    }
+
+
+    animate();
+
+
+    /* =====================================================
+       RESIZE
+    ===================================================== */
+
+    function resize() {
+
+      renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+      );
+
+      uniforms.uResolution.value.set(
+        window.innerWidth,
+        window.innerHeight
+      );
+
+    }
+
+
+    window.addEventListener(
+      "resize",
+      resize
+    );
+
+
+    /* =====================================================
+       COLOR ADJUSTER
+    ===================================================== */
+
+    const panel =
+      document.getElementById(
+        "colorAdjusterPanel"
+      );
+
+
+    const toggleButton =
+      document.getElementById(
+        "toggleAdjusterBtn"
+      );
+
+
+    const closeButton =
+      document.getElementById(
+        "closeAdjusterBtn"
+      );
+
+
+    toggleButton.addEventListener(
+      "click",
+      () => {
+
+        panel.classList.add(
+          "open"
+        );
+
+        toggleButton.style.display =
+          "none";
+
+      }
+    );
+
+
+    closeButton.addEventListener(
+      "click",
+      () => {
+
+        panel.classList.remove(
+          "open"
+        );
+
+        toggleButton.style.display =
+          "block";
+
+      }
+    );
+
+
+    /* =====================================================
+       COLOR PICKERS
+    ===================================================== */
+
+    for (
+      let i = 1;
+      i <= 6;
+      i++
+    ) {
+
+      const picker =
+        document.getElementById(
+          `colorPicker${i}`
+        );
+
+
+      const display =
+        document.getElementById(
+          `colorValue${i}`
+        );
+
+
+      picker.addEventListener(
+        "input",
+        (event) => {
+
+          const hex =
+            event.target.value;
+
+
+          const color =
+            hexToVec3(hex);
+
+
+          uniforms[
+            `uColor${i}`
+          ].value.copy(
+            color
+          );
+
+
+          display.value =
+            hex.toUpperCase();
+
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       COPY BUTTONS
+    ===================================================== */
+
+    document
+      .querySelectorAll(
+        ".copy-btn"
+      )
+      .forEach(
+        (button) => {
+
+          button.addEventListener(
+            "click",
+            async () => {
+
+              const index =
+                button.dataset.copy;
+
+
+              const display =
+                document.getElementById(
+                  `colorValue${index}`
+                );
+
+
+              await navigator
+                .clipboard
+                .writeText(
+                  display.value
+                );
+
+
+              button.textContent =
+                "Copied!";
+
+
+              button.classList.add(
+                "copied"
+              );
+
+
+              setTimeout(
+                () => {
+
+                  button.textContent =
+                    "Copy";
+
+                  button.classList.remove(
+                    "copied"
+                  );
+
+                },
+                1500
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       EXPORT ALL
+    ===================================================== */
+
+    const exportButton =
+      document.getElementById(
+        "exportAllBtn"
+      );
+
+
+    exportButton.addEventListener(
+      "click",
+      async () => {
+
+        const colors = [];
+
+
+        for (
+          let i = 1;
+          i <= 6;
+          i++
+        ) {
+
+          const color =
+            rgbToHex(
+              uniforms[
+                `uColor${i}`
+              ].value
+            );
+
+
+          colors.push(
+            color.toUpperCase()
+          );
+
+        }
+
+
+        const text =
+          `Colors:
+
+${colors
+  .map(
+    (color, index) =>
+      `Color ${index + 1}: ${color}`
+  )
+  .join("\n")}
+
+Array:
+
+[${colors
+  .map(
+    color =>
+      `"${color}"`
+  )
+  .join(", ")}]`;
+
+
+        await navigator
+          .clipboard
+          .writeText(text);
+
+
+        exportButton.textContent =
+          "Copied!";
+
+
+        setTimeout(
+          () => {
+
+            exportButton.textContent =
+              "Export All Colors";
+
+          },
+          1500
+        );
+
+      }
+    );
+
+
+    /* =====================================================
+       CUSTOM CURSOR
+    ===================================================== */
+
+    const cursor =
+      document.getElementById(
+        "customCursor"
+      );
+
+
+    let cursorX = 0;
+    let cursorY = 0;
+
+
+    document.addEventListener(
+      "mousemove",
+      (event) => {
+
+        cursorX =
+          event.clientX;
+
+        cursorY =
+          event.clientY;
+
+
+        cursor.style.left =
+          cursorX + "px";
+
+        cursor.style.top =
+          cursorY + "px";
+
+      }
+    );
+
+
+    /* =====================================================
+       CURSOR HOVER EFFECT
+    ===================================================== */
+
+    const interactiveElements =
+      document.querySelectorAll(
+        "button, input"
+      );
+
+
+    interactiveElements.forEach(
+      (element) => {
+
+        element.addEventListener(
+          "mouseenter",
+          () => {
+
+            cursor.style.width =
+              "52px";
+
+            cursor.style.height =
+              "52px";
+
+            cursor.style.borderWidth =
+              "3px";
+
+          }
+        );
+
+
+        element.addEventListener(
+          "mouseleave",
+          () => {
+
+            cursor.style.width =
+              "40px";
+
+            cursor.style.height =
+              "40px";
+
+            cursor.style.borderWidth =
+              "2px";
+
+          }
+        );
+
+      }
+    );
+
+  </script>
 
 </body>
 </html>
