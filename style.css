@@ -1,4 +1,4 @@
-/* Grundlayout */ 
+/* Ganze Seite */
 html,
 body {
     width: 100%;
@@ -7,31 +7,36 @@ body {
     padding: 0;
 }
 
+/* Schwarzer Hintergrund und Zentrierung */
 body {
     background-color: #000000;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
+    min-height: 100vh;
     overflow: hidden;
 }
 
-/* Text */
+/* "under construction" */
 .construction {
-    color: #000000;
+    color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 22px;
-    font-weight: normal;
+    font-weight: 400;
+    line-height: 1;
     text-align: center;
 }
 
-/* iPhone / kleine Bildschirme */
+/* iPhone und kleine Bildschirme */
 @media screen and (max-width: 767px) {
     .construction {
         font-size: 12px;
     }
 }
 
-/* MacBook / Desktop / iMac */
+/* MacBook, iMac und grössere Bildschirme */
 @media screen and (min-width: 768px) {
     .construction {
         font-size: 22px;
