@@ -2,11 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   <title>kisses and hugs</title>
 
@@ -29,12 +25,7 @@
     body {
       width: 100%;
       height: 100%;
-      min-height: 100%;
       background: #0a0e27;
-    }
-
-    html {
-      overflow: hidden;
     }
 
     body {
@@ -43,22 +34,22 @@
       cursor: none;
       position: fixed;
       inset: 0;
-      background: #0a0e27;
     }
 
     /*
-      Wichtig für iPhone/iPad:
-      Der Canvas wird nicht mehr mit 100vh/100dvh definiert,
-      sondern mit inset: 0 über die komplette Viewport-Fläche gelegt.
-    */
+     * WICHTIG FÜR IPHONE / IPAD
+     *
+     * Der Canvas wird bewusst größer als der Viewport gemacht.
+     * Dadurch kann an den oberen und unteren iOS-Rändern
+     * niemals ein Bereich außerhalb des WebGL-Gradients entstehen.
+     */
     #webGLApp {
       position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      inset: -12.5%;
+      width: 125%;
+      height: 125%;
       z-index: 1;
       display: block;
-      background: #0a0e27;
     }
 
     .heading {
@@ -125,24 +116,20 @@
 
   <h1 class="heading">kisses and hugs</h1>
 
-  <div
-    class="custom-cursor"
-    id="customCursor"
-  ></div>
+  <div class="custom-cursor" id="customCursor"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <script>
 
-    /*
-    ============================================================
-    TOUCH TEXTURE
-    ============================================================
-    */
+    // ============================================================
+    // TouchTexture
+    // ============================================================
 
     class TouchTexture {
 
       constructor() {
+
         this.size = 64;
         this.width = this.height = this.size;
 
@@ -166,6 +153,7 @@
         this.ctx = this.canvas.getContext("2d");
 
         this.ctx.fillStyle = "black";
+
         this.ctx.fillRect(
           0,
           0,
@@ -209,7 +197,6 @@
           } else {
 
             this.drawPoint(point);
-
           }
         }
 
@@ -312,17 +299,17 @@
 
         const radius = this.radius;
 
-        const color = `
-          ${((point.vx + 1) / 2) * 255},
-          ${((point.vy + 1) / 2) * 255},
-          ${intensity * 255}
-        `;
+        const color =
+          `${((point.vx + 1) / 2) * 255}, ${
+            ((point.vy + 1) / 2) * 255
+          }, ${intensity * 255}`;
 
         const offset = this.size * 5;
 
         this.ctx.shadowOffsetX = offset;
         this.ctx.shadowOffsetY = offset;
-        this.ctx.shadowBlur = radius;
+        this.ctx.shadowBlur = radius * 1;
+
         this.ctx.shadowColor =
           `rgba(${color},${0.2 * intensity})`;
 
@@ -344,11 +331,9 @@
     }
 
 
-    /*
-    ============================================================
-    GRADIENT BACKGROUND
-    ============================================================
-    */
+    // ============================================================
+    // GradientBackground
+    // ============================================================
 
     class GradientBackground {
 
@@ -470,13 +455,20 @@
         const viewSize =
           this.sceneManager.getViewSize();
 
+        /*
+         * Das Mesh wird bewusst 25% größer gemacht.
+         *
+         * Der Shader selbst läuft dadurch über den kompletten
+         * sichtbaren Bereich hinaus.
+         */
         const geometry =
           new THREE.PlaneGeometry(
-            viewSize.width,
-            viewSize.height,
+            viewSize.width * 1.25,
+            viewSize.height * 1.25,
             1,
             1
           );
+
 
         const material =
           new THREE.ShaderMaterial({
@@ -484,6 +476,7 @@
             uniforms: this.uniforms,
 
             vertexShader: `
+
               varying vec2 vUv;
 
               void main() {
@@ -810,64 +803,40 @@
 
 
                 float dist1 =
-                  length(
-                    uv - center1
-                  );
+                  length(uv - center1);
 
                 float dist2 =
-                  length(
-                    uv - center2
-                  );
+                  length(uv - center2);
 
                 float dist3 =
-                  length(
-                    uv - center3
-                  );
+                  length(uv - center3);
 
                 float dist4 =
-                  length(
-                    uv - center4
-                  );
+                  length(uv - center4);
 
                 float dist5 =
-                  length(
-                    uv - center5
-                  );
+                  length(uv - center5);
 
                 float dist6 =
-                  length(
-                    uv - center6
-                  );
+                  length(uv - center6);
 
                 float dist7 =
-                  length(
-                    uv - center7
-                  );
+                  length(uv - center7);
 
                 float dist8 =
-                  length(
-                    uv - center8
-                  );
+                  length(uv - center8);
 
                 float dist9 =
-                  length(
-                    uv - center9
-                  );
+                  length(uv - center9);
 
                 float dist10 =
-                  length(
-                    uv - center10
-                  );
+                  length(uv - center10);
 
                 float dist11 =
-                  length(
-                    uv - center11
-                  );
+                  length(uv - center11);
 
                 float dist12 =
-                  length(
-                    uv - center12
-                  );
+                  length(uv - center12);
 
 
                 float influence1 =
@@ -1310,7 +1279,8 @@
                   );
 
 
-                float maxBrightness = 1.0;
+                float maxBrightness =
+                  1.0;
 
                 float brightness =
                   length(color);
@@ -1512,7 +1482,6 @@
 
         this.mesh.position.z = 0;
 
-
         this.sceneManager.scene.add(
           this.mesh
         );
@@ -1521,7 +1490,9 @@
 
       update(delta) {
 
-        if (this.uniforms.uTime) {
+        if (
+          this.uniforms.uTime
+        ) {
 
           this.uniforms.uTime.value +=
             delta;
@@ -1539,17 +1510,20 @@
 
           this.mesh.geometry.dispose();
 
+
           this.mesh.geometry =
             new THREE.PlaneGeometry(
-              viewSize.width,
-              viewSize.height,
+              viewSize.width * 1.25,
+              viewSize.height * 1.25,
               1,
               1
             );
         }
 
 
-        if (this.uniforms.uResolution) {
+        if (
+          this.uniforms.uResolution
+        ) {
 
           this.uniforms.uResolution.value.set(
             width,
@@ -1560,11 +1534,9 @@
     }
 
 
-    /*
-    ============================================================
-    APP
-    ============================================================
-    */
+    // ============================================================
+    // App
+    // ============================================================
 
     class App {
 
@@ -1581,13 +1553,9 @@
           });
 
 
-        const viewport =
-          this.getViewportSize();
-
-
         this.renderer.setSize(
-          viewport.width,
-          viewport.height
+          window.innerWidth,
+          window.innerHeight
         );
 
 
@@ -1599,7 +1567,9 @@
         );
 
 
-        this.renderer.setAnimationLoop(null);
+        this.renderer.setAnimationLoop(
+          null
+        );
 
 
         document.body.appendChild(
@@ -1614,8 +1584,8 @@
         this.camera =
           new THREE.PerspectiveCamera(
             45,
-            viewport.width /
-              viewport.height,
+            window.innerWidth /
+              window.innerHeight,
             0.1,
             10000
           );
@@ -1659,36 +1629,6 @@
       }
 
 
-      /*
-        iOS Safari liefert mit visualViewport
-        die tatsächlich sichtbare Fläche.
-      */
-      getViewportSize() {
-
-        if (
-          window.visualViewport
-        ) {
-
-          return {
-            width:
-              window.visualViewport.width,
-
-            height:
-              window.visualViewport.height
-          };
-        }
-
-
-        return {
-          width:
-            window.innerWidth,
-
-          height:
-            window.innerHeight
-        };
-      }
-
-
       init() {
 
         this.gradientBackground.init();
@@ -1712,12 +1652,6 @@
             "resize",
             () => this.onResize()
           );
-
-
-          window.visualViewport.addEventListener(
-            "scroll",
-            () => this.onResize()
-          );
         }
 
 
@@ -1729,7 +1663,6 @@
               () => this.onResize(),
               100
             );
-
           }
         );
 
@@ -1744,10 +1677,7 @@
         window.addEventListener(
           "touchmove",
           (ev) =>
-            this.onTouchMove(ev),
-          {
-            passive: true
-          }
+            this.onTouchMove(ev)
         );
 
 
@@ -1830,32 +1760,24 @@
 
 
         this.onMouseMove({
-
-          clientX:
-            touch.clientX,
-
-          clientY:
-            touch.clientY
+          clientX: touch.clientX,
+          clientY: touch.clientY
         });
       }
 
 
       onMouseMove(ev) {
 
-        const viewport =
-          this.getViewportSize();
-
-
         this.mouse = {
 
           x:
             ev.clientX /
-            viewport.width,
+            window.innerWidth,
 
           y:
             1 -
             ev.clientY /
-              viewport.height
+              window.innerHeight
         };
 
 
@@ -1945,38 +1867,31 @@
 
       onResize() {
 
-        const viewport =
-          this.getViewportSize();
-
-
         this.camera.aspect =
-          viewport.width /
-          viewport.height;
+          window.innerWidth /
+          window.innerHeight;
 
 
         this.camera.updateProjectionMatrix();
 
 
         this.renderer.setSize(
-          viewport.width,
-          viewport.height,
-          false
+          window.innerWidth,
+          window.innerHeight
         );
 
 
         this.gradientBackground.onResize(
-          viewport.width,
-          viewport.height
+          window.innerWidth,
+          window.innerHeight
         );
       }
     }
 
 
-    /*
-    ============================================================
-    START
-    ============================================================
-    */
+    // ============================================================
+    // START APP
+    // ============================================================
 
     const app =
       new App();
@@ -2001,11 +1916,9 @@
     }
 
 
-    /*
-    ============================================================
-    CUSTOM CURSOR
-    ============================================================
-    */
+    // ============================================================
+    // CUSTOM CURSOR
+    // ============================================================
 
     const cursor =
       document.getElementById(
@@ -2030,8 +1943,7 @@
     );
 
 
-    let isCursorAnimating =
-      false;
+    let isCursorAnimating = false;
 
 
     function animateCursor() {
@@ -2069,12 +1981,10 @@
           !isCursorAnimating
         ) {
 
-          isCursorAnimating =
-            true;
+          isCursorAnimating = true;
 
           animateCursor();
         }
-
       }
     );
 
