@@ -119,7 +119,7 @@
         this.canvas.width = this.width;
         this.canvas.height = this.height;
         this.ctx = this.canvas.getContext("2d");
-        this.ctx.fillStyle = "black";
+        this.ctx.fillStyle = "uBlack";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.texture = new THREE.Texture(this.canvas);
       }
@@ -143,7 +143,7 @@
       }
 
       clear() {
-        this.ctx.fillStyle = "black";
+        this.ctx.fillStyle = "uBlack";
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       }
 
@@ -266,7 +266,7 @@
           uGrainIntensity: { value: 0.05 },
           uZoom: { value: 1.0 },
 
-          uBlack: {
+          uuBlack: {
             value: new THREE.Vector3(0.0, 0.0, 0.0)
           },
 
@@ -318,7 +318,7 @@
             uniform sampler2D uTouchTexture;
             uniform float uGrainIntensity;
             uniform float uZoom;
-            uniform vec3 uDarkNavy;
+            uniform vec3 uBlack;
             uniform float uGradientSize;
             uniform float uGradientCount;
             uniform float uColor1Weight;
@@ -598,7 +598,7 @@
 
               color =
                 mix(
-                  uDarkNavy,
+                  uBlack,
                   color,
                   mixFactor1
                 );
@@ -682,7 +682,7 @@
 
               color =
                 mix(
-                  uDarkNavy,
+                  uBlack,
                   color,
                   mixFactor2
                 );
